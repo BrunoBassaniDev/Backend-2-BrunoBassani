@@ -1,0 +1,23 @@
+[
+    {
+		"id": 1,
+		"title": "Toyota Corolla",
+		"status": true,
+		"stock": 20,
+		"thumbnail": ""
+	},
+	{
+		"id": 2,
+		"title": "Ford Mustang",
+		"status": true,
+		"stock": 18,
+		"thumbnail": ""
+	},
+	{
+		"id": 3,
+		"title": "Honda CR-V",
+		"status": true,
+		"stock": 12,
+		"thumbnail": ""
+	}
+]
