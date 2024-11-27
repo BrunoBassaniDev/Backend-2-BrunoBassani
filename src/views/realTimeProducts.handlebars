@@ -1,40 +1,43 @@
 <header>
-    <h1>INICIO - Productos en Tiempo Real</h1>
+    <h1>Real Time Products</h1>
 </header>
 
 <main>
     <section>
-        <h3>Productos</h3>
-        {{!-- Uso de nomenclatura BEM (B de bloque, E de elemento y M de modificador)--}}
-        <div class="products">
-            <div class="products__list">
-                <ul class="products__list__item" id="products-list"></ul>
-            </div>
+        <h3 class="title">Productos</h3>
+        <div>
+            <ul id="products-list"></ul>
         </div>
     </section>
 
     <section>
-        <h3>Formulario de Productos</h3>
-        <form class="products__form" id="products-form">
-            <input type="text" name="title" placeholder="Nombre del producto">
-            <div>¿Está activo?<input type="checkbox" name="status"></div>
-            <input type="number" name="stock" placeholder="Stock del producto">
+        <h3 class="title">Formulario para ingresar productos</h3>
+        <form id="products-form" enctype="multipart/form-data" method="POST" action="/api/products">
+            <input type="text" name="title" placeholder="Nombre">
+            <input type="text" name="category" placeholder="Categoría">
+            <input type="text" name="description" placeholder="Descripción">
+            <div>Activo <input type="checkbox" name="status"></div>
+            <input type="text" name="code" placeholder="Código">
+            <input type="number" name="price" placeholder="Precio">
+            <input type="number" name="stock" placeholder="Stock">
+            <input type="file" name="thumbnail" placeholder="Imagen">
 
-            <input type="submit" value="Guardar" style="width: 100%">
+            <input type="submit" value="Guardar">
         </form>
     </section>
-
     <section>
-        <h3>Eliminación de Productos</h3>
-        <div class="products__delete">
-            <input type="number" class="products__delete__input" id="input-product-id"
-                placeholder="ID del Producto">
+        <h3 class="title">Eliminar producto</h3>
+        <div class="btn">
+            <input type="number" id="input-product-id">
             <button id="btn-delete-product">Eliminar</button>
         </div>
     </section>
 
-    <p class="error-message" id="error-message"></p>
+    <p id="error-message"></p>
 </main>
 
+
+
+{{!-- El script de socket.io debe estar antes que home.js --}}
 <script src="/socket.io/socket.io.js"></script>
 <script src="/api/public/js/products.socket.js"></script>

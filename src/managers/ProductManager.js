@@ -4,26 +4,27 @@ import { generateId } from "../utils/collectionHandler.js";
 import { convertToBoolean } from "../utils/converter.js";
 import ErrorManager from "./ErrorManager.js";
 
-export default class ProductManager {
+export default class ProductManager{
     #jsonFilename;
     #products;
 
-    constructor() {
-        this.#jsonFilename = "products.json";
+    constructor(){
+        this.#jsonFilename= "products.json";
     }
 
-    async #findOneById(id) {
+    async $findOneById(id){
         this.#products = await this.getAll();
-        const productFound = this.#products.find((item) => item.id === Number(id));
+        const productFound= this.#products.find((item)=> item.id === Number(id));
+        console.log("Producto encontrado:", productFound);
 
         if (!productFound) {
-            throw new ErrorManager("ID no encontrado", 404);
+            console.log("Producto NO encontrado:");
+            throw new ErrorManager("Id no encontrado", 404);
         }
-
         return productFound;
     }
 
-    async getAll() {
+    async getAll(){
         try {
             this.#products = await readJsonFile(paths.files, this.#jsonFilename);
             return this.#products;
@@ -31,34 +32,33 @@ export default class ProductManager {
             throw new ErrorManager(error.message, error.code);
         }
     }
-
-    async getOneById(id) {
+    async getOneById(id){
         try {
-            const productFound = await this.#findOneById(id);
+            const productFound= await this.$findOneById(id);
             return productFound;
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }
     }
 
-    async insertOne(data, file) {
+    async insertOne(data, file){
         try {
-            const { title, status, stock } = data;
+            const { title, description, code, price, status, stock, category } = data;
 
-            if (!title || !status || !stock ) {
+            if (!title || !stock || !description || !code || !price || !category) {
                 throw new ErrorManager("Faltan datos obligatorios", 400);
             }
 
-            if (!file?.filename) {
-                throw new ErrorManager("Falta el archivo de la imagen", 400);
-            }
-
-            const product = {
+            const product={
                 id: generateId(await this.getAll()),
                 title,
-                status: convertToBoolean(status),
+                description,
+                code,
+                price: Number(price),
+                status: convertToBoolean(status) || "of",
                 stock: Number(stock),
-                thumbnail: file?.filename,
+                category,
+                thumbnail: file?.filename ?? "image-not-found.jpg",
             };
 
             this.#products.push(product);
@@ -71,21 +71,25 @@ export default class ProductManager {
         }
     }
 
-    async updateOneById(id, data, file) {
+    async updateOneById(id, data, file){
         try {
-            const { title, status, stock } = data;
-            const productFound = await this.#findOneById(id);
+            const { title, description, code, price, status, stock, category } = data;
+            const productFound= await this.$findOneById(id);
             const newThumbnail = file?.filename;
 
-            const product = {
+            const product={
                 id: productFound.id,
                 title: title || productFound.title,
-                status: status ? convertToBoolean(status) : productFound.status,
-                stock: stock ? Number(stock) : productFound.stock,
+                description: description || productFound.description,
+                code: code || productFound.code,
+                price: price ? Number(price): productFound.price,
+                status: status ? convertToBoolean(status): productFound.status,
+                stock: stock ? Number(stock): productFound.stock,
+                category: category || productFound.category,
                 thumbnail: newThumbnail || productFound.thumbnail,
             };
 
-            const index = this.#products.findIndex((item) => item.id === Number(id));
+            const index = this.#products.findIndex((item)=>item.id === Number(id));
             this.#products[index] = product;
             await writeJsonFile(paths.files, this.#jsonFilename, this.#products);
 
@@ -100,17 +104,18 @@ export default class ProductManager {
         }
     }
 
-    async deleteOneById (id) {
+    async deleteOneById(id){
         try {
-            const productFound = await this.#findOneById(id);
+            const productFound = await this.$findOneById(id);
 
-            if (productFound.thumbnail) {
+            if (productFound.thumbnail && productFound.thumbnail !== "image-not-found.jpg") {
                 await deleteFile(paths.images, productFound.thumbnail);
             }
 
-            const index = this.#products.findIndex((item) => item.id === Number(id));
+            const index = this.#products.findIndex((item)=>item.id === Number(id));
             this.#products.splice(index, 1);
             await writeJsonFile(paths.files, this.#jsonFilename, this.#products);
+
         } catch (error) {
             throw new ErrorManager(error.message, error.code);
         }

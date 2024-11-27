@@ -1,11 +1,6 @@
 * {
     box-sizing: border-box;
 }
-
-h1 {
-    color: brown;
-}
-
 .error404 {
     width: 100%;
     display: flex;
@@ -17,41 +12,179 @@ h1 {
     width: 400px;
 }
 
+header h1 {
+    color: #2c3e50;
+    font-size: 40px;
+    text-align: center;
+    margin: 10px;
+}
+
+.title{
+    text-align: center;
+    font-size: 30px;
+    padding: 20px;
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+main h3 {
+    color: #34495e;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+
 .products {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: 500px;
-}
-
-.products__list {
-    height: 200px;
-    border: 1px solid black;
-}
-
-.products__list__item {
-    list-style-position: inside;
-    padding: 0;
-    margin: 0.25rem;
-}
-
-.products__form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 500px;
-}
-
-.products__delete {
-    display: flex;
-    gap: 0.5rem;
-    width: 500px;
-}
-
-.products__delete__input {
+    align-items: center;
+    gap: 40px;
     width: 100%;
 }
 
-.error-message {
-    color: brown;
+.products__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    padding: 10;
+}
+
+.products__list__item {
+    list-style-type: none;
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    padding: 20px;
+    width: 480px; 
+    margin: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.products__list__item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+#btn-refresh-products-list {
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#btn-refresh-products-list:hover {
+    background-color: #2980b9;
+}
+
+#products-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0;
+    margin-top: 10px;
+    justify-content: center; 
+}
+
+#products-list li {
+    list-style-type: none;
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    padding: 25px;
+    width: 350px;
+    margin: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    word-wrap: break-word;
+}
+
+#products-list li:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+#products-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#products-form input[type="text"],
+#products-form input[type="number"],
+#products-form input[type="file"],
+#products-form input[type="checkbox"] {
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+}
+
+#products-form input[type="submit"] {
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#products-form input[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+
+#btn-delete-product {
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#btn-delete-product:hover {
+    background-color: #c0392b;
+}
+
+.btn{
+    text-align: center;
+    padding: 20px;
+}
+
+#input-product-id {
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+#error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 20px;
 }

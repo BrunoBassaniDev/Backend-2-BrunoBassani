@@ -18,5 +18,4 @@ btnRefreshProductsList.addEventListener("click", () => {
     console.log("¡Lista recargada!");
 });
 
-// Se ejecuta para cargar la lista de productes al ingresar o refrescar
 loadProductsList();
