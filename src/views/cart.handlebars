@@ -1,0 +1,40 @@
+<header>
+    <h1>Mi Carrito de Compras</h1>
+</header>
+
+<main>
+    <section id="resumen-carrito">
+        <h2>Resumen del Carrito</h2>
+        <div id="detalles-carrito"></div>
+        <table>
+<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="productos-carrito">
+        {{#each cart.products}}
+        <tr>
+            <td>{{this.title}}</td>
+            <td>{{this.price}}</td>
+            <td>
+                <button class="remove-product" data-id="{{this._id}}">-</button>
+                <span>{{this.quantity}}</span>
+                <button class="add-product" data-id="{{this._id}}">+</button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+<div class="botones-carrito">
+    <button id="vaciar-carrito" data-id="{{cart._id}}">Eliminar Todo</button>
+    <button id="regresar" onclick="window.history.back()">Regresar</button>
+</div>
+<span id="mensaje-error" class="mensaje-error"></span>
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/api/public/js/carts.socket.js"></script>

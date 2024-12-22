@@ -1,4 +1,3 @@
-
 import path from "path";
 
 const ROOT_PATH = path.resolve();

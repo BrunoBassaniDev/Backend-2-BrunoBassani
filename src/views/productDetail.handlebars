@@ -1,0 +1,24 @@
+<header>
+  <h1 class="titulo-producto">{{product.title}}</h1>
+</header>
+<main>
+  <section id="detalle-producto">
+    <div class="informacion-producto">
+      <p class="precio"><span class="etiqueta">Precio:</span>
+        ${{product.price}}</p>
+      <p class="descripcion"><span class="etiqueta">Descripción:</span>
+        {{product.description}}</p>
+      <p class="codigo"><span class="etiqueta">Código:</span>
+        {{product.code}}</p>
+    </div>
+    <img
+      src="/api/public/images/{{product.thumbnail}}"
+      alt="Imagen de {{product.title}}"
+      class="imagen-producto"
+    />
+
+    <div class="acciones-producto">
+      <button id="btn-volver" onclick="window.history.back()">Regresar</button>
+    </div>
+  </section>
+</main>

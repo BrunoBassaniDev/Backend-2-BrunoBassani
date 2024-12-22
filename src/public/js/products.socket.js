@@ -2,57 +2,130 @@ const socket = io();
 
 const productsList = document.getElementById("products-list");
 const productsForm = document.getElementById("products-form");
-const errorMessage = document.getElementById("error-message");
 const inputProductId = document.getElementById("input-product-id");
 const btnDeleteProduct = document.getElementById("btn-delete-product");
+const btnDeleteCart = document.getElementById("btn-delete-cart");
+const errorMessage = document.getElementById("error-message");
 
-socket.on("products-list", (data)=>{
-    const products = data.products || {};
+let currentPage = 1;
+let currentSort = "asc";
+let globalCartId;
 
-    productsList.innerText="";
+socket.on("products-list", (data) => {
+    const { docs: products, totalPages=1, cartId } = data || {};
+    globalCartId = cartId;
+    productsList.innerText = "";
+
+    if (!cartId) {
+        console.error("Cart ID no recibido");
+        return;
+    }
 
     products.forEach((product) => {
-        productsList.innerHTML += `<li>Nombre: ${product.title} -- Código: ${product.code}<br>
-        Descripción: ${product.description} <br>
-        Categoría: ${product.category} -- Stock: ${product.stock} -- Estado: ${product.status} <br>
-        Imagen: <img src="/api/public/images/${product.thumbnail}" alt="image-${product.title}" width="100"></li>`;
+        productsList.innerHTML += `<tr>
+        <td> ${product.id} </td>
+        <td>  ${product.title} </td>
+        <td> $${product.price} </td>
+        <td>
+            <button class="btn-reset btn-info" onclick="window.location.href='/product/${product.id}'"><span class="material-icons">info</span></button>
+            <button class="add-to-cart" data-product-id="${product.id}">+</button>
+            <button class="remove-from-cart" data-product-id="${product.id}">-</button>
+        </td>
+        </tr>
+        `;
     });
-
+    const paginationInfo = document.getElementById("pagination-info");
+    paginationInfo.dataset.totalPages = totalPages;
+    paginationInfo.innerText = `${currentPage} de ${totalPages}`;
 });
 
-productsForm.addEventListener("submit", async(event)=>{
+document.getElementById("prev-page").addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        socket.emit("change-page", { page: currentPage, sort: currentSort });
+    }
+});
+
+document.getElementById("next-page").addEventListener("click", () => {
+    const totalPages = parseInt(document.getElementById("pagination-info").dataset.totalPages, 10);
+    if (currentPage < totalPages) {
+        currentPage++;
+        socket.emit("change-page", { page: currentPage, sort: currentSort });
+    }
+});
+
+document.getElementById("tilte-asc").addEventListener("click", () => {
+    currentSort = "asc";
+    currentPage = 1;
+    socket.emit("change-page", { page: currentPage, sort: currentSort });
+});
+
+document.getElementById("tilte-desc").addEventListener("click", () => {
+    currentSort = "desc";
+    currentPage = 1;
+    socket.emit("change-page", { page: currentPage, sort: currentSort });
+});
+
+document.body.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (target.matches(".add-to-cart")) {
+        const productId = target.dataset.productId;
+        if (productId) {
+            socket.emit("add-product", { productId });
+        }
+    }
+
+    if (target.matches(".remove-from-cart")) {
+        const productId = target.dataset.productId;
+        if (productId) {
+            socket.emit("remove-product", { productId });
+        }
+    }
+});
+
+btnDeleteCart.onclick = (event)=>{
+    if (event.target && event.target.id === "btn-delete-cart") {
+        socket.emit("delete-cart", { id: globalCartId });
+    }
+};
+
+productsForm.onsubmit = (event) => {
     event.preventDefault();
     const form = event.target;
-    const formdata = new FormData(form);
+    const formData = new FormData(form);
+    const file = formData.get("file");
+    errorMessage.innerText = "";
 
-    try {
-        const response = await fetch("/api/products", {
-            method: "POST",
-            body: formdata,
-        });
-        if (!response.ok) {
-            const error = await response.json();
-            console.log(`Error: ${error.message}`);
-            return;
-        }
-        console.log("Producto agregado con éxito.");
-        productsForm.reset();
-    } catch (error) {
-        console.error("Error al enviar el formulario:", error);
-    }
-});
+    form.reset();
 
-btnDeleteProduct.addEventListener("click", ()=>{
+    socket.emit("insert-product", {
+        title: formData.get("title"),
+        status: formData.get("status") || "off",
+        stock: formData.get("stock"),
+        category: formData.get("category"),
+        price: formData.get("price"),
+        code: formData.get("code"),
+        description: formData.get("description"),
+        file: {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            buffer: file,
+        },
+    });
+};
+
+btnDeleteProduct.onclick = () => {
+
     const id = inputProductId.value;
-    inputProductId.innerText="";
-    errorMessage.innerText="";
+    inputProductId.value = "";
+    errorMessage.innerText = "";
 
-    if (id>0) {
-        socket.emit("delete-product", { id });
-    }
+    socket.emit("delete-product", { id });
 
-});
+};
 
-socket.on("error-message", (data)=>{
-    errorMessage.innerHTML= data.message;
+socket.on("error-message", (data) => {
+    errorMessage.innerText = data.message;
 });
