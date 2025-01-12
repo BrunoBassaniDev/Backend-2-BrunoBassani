@@ -1,72 +1,83 @@
-<header>
-    <h1>Real Time Products</h1>
-</header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Bienvenido, {{user.first_name}} {{user.last_name}}</h1>
+    <button onclick="window.location.href='/api/sessions/logout'">Logout</button>
+    <header>
+        <h1>Real Time Products</h1>
+    </header>
 
-<main>
-    <section>
-        <h3 class="title">Productos</h3>
-        <div>
+    <main>
+        <section>
+            <h3 class="title">Productos</h3>
             <div>
-                <h4>Ordenar</h4>
-                <button id="title-asc">Ascendente</button>
-                <button id="title-desc">Descendente</button>
-            </div>
-            <div class="table-container">
-                <div class="table-header">
-                    <span>ID</span>
-                    <span>Nombre</span>
-                    <span>Precio</span>
-                    <span>Acciones</span>
+                <div>
+                    <h4>Ordenar</h4>
+                    <button id="title-asc">Ascendente</button>
+                    <button id="title-desc">Descendente</button>
                 </div>
-                <div id="products-list" class="table-body"></div>
+                <div class="table-container">
+                    <div class="table-header">
+                        <span>ID</span>
+                        <span>Nombre</span>
+                        <span>Precio</span>
+                        <span>Acciones</span>
+                    </div>
+                    <div id="products-list" class="table-body"></div>
+                </div>
             </div>
-        </div>
-        <div class="pagination-controls">
-            <button id="prev-page" class="btn-reset">&#9664;</button>
-            <span class="pagination-info" id="pagination-info"></span>
-            <button id="next-page" class="btn-reset">&#9654;</button>
-        </div>
-    </section>
-
-    <section>
-        <h3 class="title">Tu Carrito</h3>
-        <button onclick="window.location.href='/cart/6985185f4918c3949c50669b'">Ver Carrito</button>
-        <button id="btn-delete-cart" data-cart-id="{{cart._id}}">Limpiar Carrito</button>
-    </section>
-
-    <section>
-        <h3 class="title">Añadir Nuevo Producto</h3>
-        <form id="products-form" enctype="multipart/form-data" method="POST" action="/api/products">
-            <div class="form-row">
-                <input type="text" name="title" placeholder="Nombre del Producto">
-                <input type="text" name="category" placeholder="Categoría">
-                <input type="text" name="description" placeholder="Descripción">
+            <div class="pagination-controls">
+                <button id="prev-page" class="btn-reset">&#9664;</button>
+                <span class="pagination-info" id="pagination-info"></span>
+                <button id="next-page" class="btn-reset">&#9654;</button>
             </div>
-            <div class="form-row">
-                <input type="text" name="code" placeholder="Código de Producto">
-                <input type="number" name="price" placeholder="Precio">
-                <input type="number" name="stock" placeholder="Cantidad en Stock">
+        </section>
+
+        <section>
+            <h3 class="title">Tu Carrito</h3>
+            <button onclick="window.location.href='/cart/6985185f4918c3949c50669b'">Ver Carrito</button>
+            <button id="btn-delete-cart" data-cart-id="{{cart._id}}">Limpiar Carrito</button>
+        </section>
+
+        <section>
+            <h3 class="title">Añadir Nuevo Producto</h3>
+            <form id="products-form" enctype="multipart/form-data" method="POST" action="/api/products">
+                <div class="form-row">
+                    <input type="text" name="title" placeholder="Nombre del Producto">
+                    <input type="text" name="category" placeholder="Categoría">
+                    <input type="text" name="description" placeholder="Descripción">
+                </div>
+                <div class="form-row">
+                    <input type="text" name="code" placeholder="Código de Producto">
+                    <input type="number" name="price" placeholder="Precio">
+                    <input type="number" name="stock" placeholder="Cantidad en Stock">
+                </div>
+                <div class="form-row">
+                    <label>
+                        <input type="checkbox" name="status"> Activo
+                    </label>
+                    <input type="file" name="thumbnail" accept="image/*">
+                </div>
+                <button type="submit">Guardar Producto</button>
+            </form>
+        </section>
+
+        <section>
+            <h3 class="title">Quitar Producto</h3>
+            <div class="delete-product">
+                <input type="number" id="input-product-id" placeholder="Introduce el ID">
+                <button id="btn-delete-product">Eliminar</button>
             </div>
-            <div class="form-row">
-                <label>
-                    <input type="checkbox" name="status"> Activo
-                </label>
-                <input type="file" name="thumbnail" accept="image/*">
-            </div>
-            <button type="submit">Guardar Producto</button>
-        </form>
-    </section>
+        </section>
 
-    <section>
-        <h3 class="title">Quitar Producto</h3>
-        <div class="delete-product">
-            <input type="number" id="input-product-id" placeholder="Introduce el ID">
-            <button id="btn-delete-product">Eliminar</button>
-        </div>
-    </section>
+        <p id="error-message" class="error-message"></p>
+    </main>
 
-    <p id="error-message" class="error-message"></p>
-</main>
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/api/public/js/products.socket.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/api/public/js/products.socket.js"></script>
+</body>
+</html>

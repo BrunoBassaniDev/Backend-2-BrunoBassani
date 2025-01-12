@@ -1,12 +1,11 @@
-import { connect, Types } from "mongoose" ;
+import { connect, Types } from "mongoose";
 
 export const connectDB = async () => {
-    const URL = "mongodb+srv://bruno:1234@cluster0.dvwnb.mongodb.net/Entrega";
-    try{
+    const URL = "mongodb+srv://bruno:1234@cluster0.dvwnb.mongodb.net/integrative_practice";
+    try {
         await connect(URL);
         console.log("Conectado a MONGODB");
-    }
-    catch (error) {
+    } catch (error) {
         console.log("Error al conectar a MONGODB", error.message);
     }
 };
