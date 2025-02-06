@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
     first_name: { type: String, required: true },
@@ -11,13 +10,6 @@ const userSchema = new mongoose.Schema({
     role: { type: String, default: 'user' }
 }, {
     timestamps: true,
-});
-
-userSchema.pre('save', function(next) {
-    if (this.isModified('password')) {
-        this.password = bcrypt.hashSync(this.password, 10);
-    }
-    next();
 });
 
 export const usuariosModelo = mongoose.model("usuarios", userSchema);

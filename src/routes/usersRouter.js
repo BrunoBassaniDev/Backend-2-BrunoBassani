@@ -1,18 +1,28 @@
 import { Router } from 'express';
-import { auth } from '../middleware/auth.js';
-import { usuariosModelo as User } from '../models/usuarios.model.js';
+import jwt from 'jsonwebtoken';
+import { SECRET } from '../utils.js';
 
 const router = Router();
 
 router.get('/login', (req, res) => {
     if (req.signedCookies.currentUser) {
-        return res.redirect('/users/current');
+        return res.status(200).json({ status: 'success', redirectUrl: '/users/current' });
     }
     res.render('login');
 });
 
-router.get('/current', auth, (req, res) => {
-    res.render('current', { user: req.user });
+router.get('/current', (req, res) => {
+    if (!req.signedCookies.currentUser) {
+        return res.status(200).json({ status: 'success', redirectUrl: '/users/login' });
+    }
+    try {
+        const token = req.signedCookies.currentUser;
+        const user = jwt.verify(token, SECRET);
+        res.render('current', { user });
+    } catch (error) {
+        console.error('Error verifying token:', error);
+        res.status(200).json({ status: 'success', redirectUrl: '/users/login' });
+    }
 });
 
 export default router;

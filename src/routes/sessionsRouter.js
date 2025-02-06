@@ -20,9 +20,9 @@ router.post('/login', (req, res, next) => {
         if (err) return next(err);
         if (!user) return res.status(400).json({ message: info.message });
 
-        const token = jwt.sign({ id: user.id }, SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(user.toObject(), SECRET, { expiresIn: '1h' }); 
         res.cookie('cookietoken', token, { httpOnly: true });
-        res.redirect('/products');
+        res.status(200).json({ status: 'success', message: 'Login successful', redirectUrl: '/products' });
     })(req, res, next);
 });
 
@@ -37,6 +37,8 @@ router.get('/current', passport.authenticate('current', { session: false }), (re
 });
 
 router.get('/logout', (req, res) => {
-    res.clearCookie('cookietoken');
-    res.redirect('/login');
+    res.clearCookie('currentUser');
+    res.status(200).json({ status: 'success', message: 'Logout successful', redirectUrl: '/users/login' });
 });
+
+export default router;

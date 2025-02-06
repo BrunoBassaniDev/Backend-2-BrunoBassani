@@ -2,8 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { Strategy as GitHubStrategy } from "passport-github2";
-import { SECRET } from "../utils.js";
-import { generarHash } from "../utils.js";
+import { SECRET, generaHash } from "../utils.js";
 import { config } from "./config.js";
 import { UsuariosManager } from "../managers/UsuariosManager.js";
 import bcrypt from "bcrypt";
@@ -37,7 +36,7 @@ export const iniciarPassport = () => {
                         return done(null, false);
                     }
 
-                    password = generarHash(password);
+                    password = generaHash(password);
 
                     let nuevoUsuario = await UsuariosManager.create({ first_name, last_name, email, age, password, cart, role });
                     return done(null, nuevoUsuario);
