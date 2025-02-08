@@ -1,6 +1,7 @@
 import { Router } from "express";
 import ProductManager from "../managers/ProductManager.js";
 import uploader from "../utils/uploader.js";
+import { authorize } from "../middleware/auth.js";
 
 const router = Router();
 const productManager = new ProductManager();
@@ -23,7 +24,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/", uploader.single("thumbnail"), async (req, res) => {
+router.post("/", authorize(['admin']), uploader.single("thumbnail"), async (req, res) => {
     try {
         const product = await productManager.insertOne(req.body, req.file?.filename);
         res.status(201).json({ status: "success", payload: product });
@@ -32,7 +33,7 @@ router.post("/", uploader.single("thumbnail"), async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authorize(['admin']), async (req, res) => {
     try {
         const product = await productManager.updateOneById(req.params.id, req.body);
         res.status(200).json({ status: "success", payload: product });
@@ -41,7 +42,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authorize(['admin']), async (req, res) => {
     try {
         await productManager.deleteOneById(req.params.id);
         res.status(200).json({ status: "success" });

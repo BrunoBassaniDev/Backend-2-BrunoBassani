@@ -1,5 +1,7 @@
 import { Router } from "express";
 import CartManager from "../managers/CartManager.js";
+import { purchaseCart } from "../controllers/CartsController.js";
+import { auth } from '../middleware/auth.js';
 
 const router = Router();
 const cartManager = new CartManager();
@@ -15,7 +17,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     try {
-        const cart = await cartManager.getOneById(req.params.id) ;
+        const cart = await cartManager.getOneById(req.params.id);
         res.status(200).json({ status: "success", payload: cart });
     } catch (error) {
         res.status(error.code).json({ status: "error", message: error.message });
@@ -59,5 +61,7 @@ router.delete("/:id/products/:pid", async (req, res) => {
         errorHandler(res, error.message);
     }
 });
+
+router.post("/:cid/purchase", auth, purchaseCart);
 
 export default router;

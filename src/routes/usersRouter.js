@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { SECRET } from '../utils.js';
+import { UsuarioDTO } from '../dto/UsuarioDTO.js';
 
 const router = Router();
 
@@ -18,7 +19,8 @@ router.get('/current', (req, res) => {
     try {
         const token = req.signedCookies.currentUser;
         const user = jwt.verify(token, SECRET);
-        res.render('current', { user });
+        const userDTO = new UsuarioDTO(user);
+        res.render('current', { user: userDTO });
     } catch (error) {
         console.error('Error verifying token:', error);
         res.status(200).json({ status: 'success', redirectUrl: '/users/login' });

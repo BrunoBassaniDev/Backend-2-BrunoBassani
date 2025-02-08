@@ -1,11 +1,15 @@
-export const config={
-    PORT:8080,
-    MONGO_URL:"mongodb+srv://bruno:1234@cluster0.dvwnb.mongodb.net/integrative_practice",
-    DB_NAME:"integrative.practice",
-    SECRET_SESSION: "1234" ,
-    GITHUB:{
-    CALLBACKGITHUB: "http://localhost:8080/api/sessions/callbackGithub",
-    CLIENT_ID_GITHUB: "Iv23li6XKfInMM2EJAvl",
-    CLIENT_SECRET_GITHUB: "bb6fbceaa93538c7db932047ebf202da13e00204",
-    }
-}
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const config = {
+    PORT: process.env.PORT || 8080,
+    MONGO_URL: process.env.MONGO_URL,
+    SECRET_SESSION: process.env.SECRET_SESSION,
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL,
+    SECRET: process.env.SECRET,
+    EMAIL_USER: process.env.EMAIL_USER,
+    EMAIL_PASS: process.env.EMAIL_PASS
+};

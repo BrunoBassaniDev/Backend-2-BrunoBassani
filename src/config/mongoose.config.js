@@ -1,15 +1,14 @@
-import { connect, Types } from "mongoose";
+import mongoose from 'mongoose';
+import { config } from './config.js';
 
 export const connectDB = async () => {
-    const URL = "mongodb+srv://bruno:1234@cluster0.dvwnb.mongodb.net/integrative_practice";
     try {
-        await connect(URL);
-        console.log("Conectado a MONGODB");
+        await mongoose.connect(config.MONGO_URL);
+        console.log('MongoDB connected');
     } catch (error) {
-        console.log("Error al conectar a MONGODB", error.message);
+        console.error('Error connecting to MongoDB', error);
+        process.exit(1);
     }
 };
 
-export const isValidID = (id) => {
-    return Types.ObjectId.isValid(id);
-};
+export const isValidID = (id) => mongoose.Types.ObjectId.isValid(id);
