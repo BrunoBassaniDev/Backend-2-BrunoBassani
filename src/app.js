@@ -1,22 +1,22 @@
 import express from "express";
+import dotenv from "dotenv";
 import { config as configHandlebars } from "./config/handlebars.config.js";
 import { config as configWebsocket } from "./config/websocket.config.js";
 import { connectDB } from "./config/mongoose.config.js";
-import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import fs from 'fs';
 import { config } from './config/config.js';
-import { auth, authorize } from './middleware/auth.js';
 import passport from 'passport';
 import { iniciarPassport } from './config/passport.config.js';
 
-import { router as sessionsRouter } from './routes/sessionsRouter.js';
+import sessionsRouter from './routes/sessionsRouter.js';
 import routerProducts from "./routes/products.router.js";
 import routerCarts from "./routes/carts.router.js";
 import routerViewHome from "./routes/home.view.router.js";
 import usersRouter from './routes/usersRouter.js';
 import apiUsersRouter from './routes/apiUsersRouter.js';
 import passwordRouter from './routes/passwordRouter.js';
+
+dotenv.config();
 
 const app = express();
 
@@ -38,7 +38,7 @@ app.use(passport.initialize());
 app.use(express.static("./src/public"));
 
 app.use("/api/products", routerProducts);
-app.use("/api/carts", routerCarts);
+app.use("/api/carts", routerCarts); // Asegúrate de registrar la ruta de carritos
 app.use("/", routerViewHome);
 app.use("/api/sessions", sessionsRouter);
 app.use("/users", usersRouter);

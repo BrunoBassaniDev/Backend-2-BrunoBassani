@@ -1,6 +1,8 @@
 import { Router } from "express";
+import CartManager from "../managers/CartManager.js";
 
 const router = Router();
+const cartManager = new CartManager();
 
 router.get("/product/:id", async (req, res) => {
     try {
@@ -10,34 +12,29 @@ router.get("/product/:id", async (req, res) => {
         const data = await response.json();
 
         if (data.status === "error") {
-            return res.status(404).render("error", { message: "Producto no encontrado" });
+            return res.status(404).send("Producto no encontrado");
         }
 
         const product = data.payload;
 
         res.render("productDetail", { title: product.title, product });
     } catch (error) {
-        res.status(500).render("error", { message: error.message });
+        res.status(500).send(`Error al obtener el producto: ${error.message}`);
     }
 });
 
 router.get("/cart/:id", async (req, res) => {
     try {
         const cartId = req.params.id;
-        console.log(cartId);
+        const cart = await cartManager.getOneById(cartId);
 
-        const response = await fetch(`http://localhost:8080/api/carts/${cartId}`);
-        const data = await response.json();
-
-        if (data.status === "error") {
-            return res.status(404).render("error", { message: "Producto no encontrado" });
+        if (!cart) {
+            return res.status(404).send("Carrito no encontrado");
         }
 
-        const cart = data.payload;
-
-        res.render("cart", { title: "carrito", cart });
+        res.render("cart", { title: "Carrito", cart });
     } catch (error) {
-        res.status(500).render("error", { message: error.message });
+        res.status(500).send(`Error al obtener el carrito: ${error.message}`);
     }
 });
 

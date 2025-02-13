@@ -1,149 +1,90 @@
-import ErrorManager from "./ErrorManager.js";
-import { isValidID } from "../config/mongoose.config.js";
-import CartModel from "../models/cart.model.js";
+import Cart from '../models/cart.model.js';
+import Product from '../models/product.model.js';
+import ErrorManager from './ErrorManager.js';
 
-export default class CartManager {
-    #cartModel;
-
-    constructor() {
-        this.#cartModel = CartModel;
-    }
-
-    async #findOneById(id) {
-        if (!isValidID(id)) {
-            throw new ErrorManager("ID inválido", 400);
+class CartManager {
+    async insertOne(cartData) {
+        if (!cartData.userId) {
+            throw new ErrorManager('User ID is required', 400);
         }
-        const cart = await this.#cartModel.findById(id).populate("products.product");
-        if (!cart) {
-            throw new ErrorManager("ID no encontrado", 404);
-        }
+        const cart = new Cart(cartData);
+        await cart.save();
         return cart;
     }
 
-    async getAll(params) {
-        try {
-            const paginationOptions = {
-                limit: params?.limit || 10,
-                page: params?.page || 1,
-                populate: "products.product",
-                lean: true,
-            };
-
-            return await this.#cartModel.paginate({}, paginationOptions);
-        } catch (error) {
-            throw ErrorManager.handleError(error);
-        }
+    async getAll() {
+        return Cart.find().lean();
     }
 
     async getOneById(id) {
-        try {
-            return await this.#findOneById(id);
-        } catch (error) {
-            if (error.code === 404) {
-                const newCart = await this.insertOne({ products: [] });
-                return newCart;
-            }
-            throw ErrorManager.handleError(error);
-        }
+        return Cart.findById(id).populate('products.product').lean();
     }
 
-    async insertOne(data) {
+    async addProductToCart(cartId, productId, quantity) {
         try {
-            const cart = await this.#cartModel.create(data);
-            return cart;
-        } catch (error) {
-            throw ErrorManager.handleError(error);
-        }
-    }
-
-    async addOneProduct(id, productId) {
-        try {
-            const cart = await this.#findOneById(id);
-            const productIndex = cart.products.findIndex((item) => item.product._id.toString() === productId);
-
-            if (productIndex >= 0) {
-                cart.products[productIndex].quantity++;
-            } else {
-                cart.products.push({ product: productId, quantity: 1 });
-            }
-
-            await cart.save();
-
-            return cart;
-        } catch (error) {
-            throw new ErrorManager(error.message, error.code);
-        }
-    }
-
-    async deleteOneProduct(id, productId) {
-        try {
-            const cart = await this.#findOneById(id);
-            const productIndex = cart.products.findIndex((item) => item.product._id.toString() === productId);
-
-            if (productIndex < 0) {
-                throw new ErrorManager("El producto no existe en el carrito", 404);
-            }
-
-            const product= cart.products[productIndex];
-            if (product.quantity > 1) {
-                cart.products[productIndex].quantity--;
-            } else {
-                cart.products.splice(productIndex, 1);
-            }
-
-            await cart.save();
-
-            return cart;
-        } catch (error) {
-            throw new ErrorManager(error.message, error.code);
-        }
-    }
-
-    async deleteOneById(id) {
-        try {
-            const cart = await this.#findOneById(id);
-
+            const cart = await Cart.findById(cartId);
             if (!cart) {
-                throw ErrorManager.handleError(error);
+                throw new ErrorManager('Cart not found', 404);
             }
 
-            await this.#cartModel.findByIdAndDelete(id);
+            const product = await Product.findById(productId);
+            if (!product) {
+                throw new ErrorManager('Product not found', 404);
+            }
 
+            const existingProductIndex = cart.products.findIndex(p => p.product.toString() === productId);
+            const currentQuantity = existingProductIndex !== -1 ? cart.products[existingProductIndex].quantity : 0;
+            const totalQuantity = currentQuantity + quantity;
+
+            if (totalQuantity > product.stock) {
+                throw new ErrorManager('Not enough stock available', 400);
+            }
+
+            if (existingProductIndex !== -1) {
+                cart.products[existingProductIndex].quantity = totalQuantity;
+            } else {
+                cart.products.push({ product: productId, quantity });
+            }
+
+            await cart.save();
             return cart;
         } catch (error) {
             throw ErrorManager.handleError(error);
         }
-
     }
 
-    async deleteAllProductsByProductId(id, productId) {
+    async deleteOneProduct(cartId, productId) {
         try {
-            const cart = await this.#findOneById(id);
+            const cart = await Cart.findById(cartId);
+            if (!cart) {
+                throw new ErrorManager('Cart not found', 404);
+            }
 
-            cart.products = cart.products.filter((item) => item.product._id.toString() !== productId);
+            const productIndex = cart.products.findIndex(p => p.product.toString() === productId);
+            if (productIndex === -1) {
+                throw new ErrorManager('Product not found in cart', 404);
+            }
 
+            cart.products.splice(productIndex, 1);
             await cart.save();
-
             return cart;
         } catch (error) {
-            throw new ErrorManager(error.message, error.code);
+            throw ErrorManager.handleError(error);
         }
     }
 
-    async removeAllProductsById(id) {
+    async purchaseCart(cartId) {
         try {
-            const cart = await this.#findOneById(id);
-
+            const cart = await Cart.findById(cartId).populate('products.product');
             if (!cart) {
-                throw ErrorManager.handleError(error);
+                throw new ErrorManager('Cart not found', 404);
             }
 
-            cart.products = [];
-            await cart.save();
-
-            return cart;
+            return { message: 'Purchase successful' };
         } catch (error) {
             throw ErrorManager.handleError(error);
         }
     }
 }
+
+export default CartManager;

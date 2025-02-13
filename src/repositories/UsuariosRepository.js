@@ -1,27 +1,25 @@
 import { UsuariosDAO } from "../dao/UsuariosDAO.js";
 
-export class UsuariosRepository {
-    static async getUsuarios() {
-        return UsuariosDAO.getUsuarios();
+class UsuariosRepository {
+    async getUsuarioByEmail(email) {
+        return await UsuariosDAO.getUsuarioByEmail(email);
     }
 
-    static async getUsuarioById(id) {
-        return UsuariosDAO.getUsuarioById(id);
+    async createUsuario(userData) {
+        return await UsuariosDAO.createUsuario(userData);
     }
 
-    static async getUsuarioByEmail(email) {
-        return UsuariosDAO.getUsuarioByEmail(email);
+    async getUsuarios() {
+        return await UsuariosDAO.getUsuarios();
     }
 
-    static async createUsuario(usuario) {
-        return UsuariosDAO.createUsuario(usuario);
+    async getUsuarioById(id) {
+        return await UsuariosDAO.getUsuarioById(id);
     }
 
-    static async updateUsuario(id, usuario) {
-        return UsuariosDAO.updateUsuario(id, usuario);
-    }
-
-    static async deleteUsuario(id) {
-        return UsuariosDAO.deleteUsuario(id);
+    async updateUsuario(id, userData) {
+        return await UsuariosDAO.updateUsuario(id, userData);
     }
 }
+
+export default new UsuariosRepository();

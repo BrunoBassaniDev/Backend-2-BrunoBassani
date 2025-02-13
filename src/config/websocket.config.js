@@ -6,7 +6,7 @@ import { writeJsonFile } from "../utils/fileHandler.js";
 import paths from "../utils/paths.js";
 
 const productManager = new ProductManager();
-const cartManager= new CartManager();
+const cartManager = new CartManager();
 
 export const config = (httpServer) => {
     const socketServer = new Server(httpServer);
@@ -14,18 +14,24 @@ export const config = (httpServer) => {
     socketServer.on("connection", async (socket) => {
         console.log("Conexión establecida", socket.id);
 
-        let cartId ="6763074e2797b2827b49548a";
+        let cartId;
 
-        if (!cartId) {
-            const newCart = await cartManager.insertOne({ products: [] });
-            cartId = newCart._id;
-        }
-
-        socket.emit("cart-updated", { cart: await cartManager.getOneById(cartId) });
+        socket.on("initialize-cart", async (data) => {
+            const { userId } = data;
+            const userCart = await cartManager.getCartByUserId(userId);
+            if (userCart) {
+                cartId = userCart._id;
+            } else {
+                const newCart = await cartManager.insertOne({ userId, products: [] });
+                cartId = newCart._id;
+            }
+            socket.emit("cart-initialized", { cartId });
+            socket.emit("cart-updated", { cart: await cartManager.getOneById(cartId) });
+        });
 
         const emitPaginatedProducts = async (page = 1, sort = "asc") => {
             const products = await productManager.getAll({ page, sort });
-            socketServer.emit("products-list", { ...products, cartId });
+            socket.emit("products-list", { ...products, cartId });
         };
 
         await emitPaginatedProducts();
@@ -56,7 +62,7 @@ export const config = (httpServer) => {
 
                 await emitPaginatedProducts();
             } catch (error) {
-                socketServer.emit("error-message", { message: error.message });
+                socket.emit("error-message", { message: error.message });
             }
         });
 
@@ -66,14 +72,13 @@ export const config = (httpServer) => {
 
                 await emitPaginatedProducts();
             } catch (error) {
-                socketServer.emit("error-message", { message: error.message });
+                socket.emit("error-message", { message: error.message });
             }
         });
 
-        socket.on("add-product", async ({ productId }) => {
+        socket.on("add-product-to-cart", async ({ cartId, productId }) => {
             try {
-
-                await cartManager.addOneProduct(cartId, productId);
+                await cartManager.addProductToCart(cartId, productId, 1);
 
                 const updatedCart = await cartManager.getOneById(cartId);
 
@@ -85,7 +90,7 @@ export const config = (httpServer) => {
             }
         });
 
-        socket.on("remove-product", async ({ productId }) => {
+        socket.on("remove-product-from-cart", async ({ cartId, productId }) => {
             try {
                 if (!cartId) {
                     throw new Error("No tienes un carrito asociado");
@@ -114,11 +119,11 @@ export const config = (httpServer) => {
         socket.on("delete-cart", async (data) => {
             try {
                 const cartId = data.id;
-                const updatedCart= await cartManager.removeAllProductsById(cartId);
+                const updatedCart = await cartManager.removeAllProductsById(cartId);
 
                 socket.emit("cart-updated", { cart: updatedCart });
             } catch (error) {
-                socketServer.emit("error-message", { message: error.message });
+                socket.emit("error-message", { message: error.message });
             }
         });
 

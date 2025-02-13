@@ -1,23 +1,25 @@
-import { ProductosDAO } from "../dao/ProductosDAO.js";
+import ProductModel from "../models/product.model.js";
 
-export class ProductosRepository {
-    static async getProductos() {
-        return ProductosDAO.getProductos();
+class ProductosRepository {
+    async createProducto(productData) {
+        return await ProductModel.create(productData);
     }
 
-    static async getProductoById(id) {
-        return ProductosDAO.getProductoById(id);
+    async getProductoById(id) {
+        return await ProductModel.findById(id).lean();
     }
 
-    static async createProducto(producto) {
-        return ProductosDAO.createProducto(producto);
+    async getProductos(query) {
+        return await ProductModel.find(query).lean();
     }
 
-    static async updateProducto(id, producto) {
-        return ProductosDAO.updateProducto(id, producto);
+    async updateProducto(id, productData) {
+        return await ProductModel.findByIdAndUpdate(id, productData, { new: true }).lean();
     }
 
-    static async deleteProducto(id) {
-        return ProductosDAO.deleteProducto(id);
+    async deleteProducto(id) {
+        return await ProductModel.findByIdAndDelete(id).lean();
     }
 }
+
+export default new ProductosRepository();

@@ -54,12 +54,12 @@ const updateCartUI = (cart) => {
     cart.products.forEach((product) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${product.title}</td>
-            <td>${product.price}</td>
+            <td>${product.product.title}</td>
+            <td>${product.product.price}</td>
             <td>
-                <button class="remove-product" data-id="${product._id}">-</button>
+                <button class="remove-product" data-id="${product.product._id}">-</button>
                 <span>${product.quantity}</span>
-                <button class="add-product" data-id="${product._id}">+</button>
+                <button class="add-product" data-id="${product.product._id}">+</button>
             </td>
         `;
         cartTableBody.appendChild(row);

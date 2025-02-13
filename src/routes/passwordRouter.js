@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { UsuariosRepository } from '../repositories/UsuariosRepository.js';
+import UsuariosRepository from '../repositories/UsuariosRepository.js';
 import { generaHash, isValidPassword } from '../utils.js';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
@@ -16,7 +16,6 @@ router.post('/forgot-password', async (req, res) => {
     const token = jwt.sign({ id: user._id }, config.SECRET, { expiresIn: '1h' });
     const resetLink = `http://localhost:8080/reset-password/${token}`;
 
-    // Configura el transporte de nodemailer
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -25,7 +24,6 @@ router.post('/forgot-password', async (req, res) => {
         }
     });
 
-    // Configura el correo electrónico
     const mailOptions = {
         from: config.EMAIL_USER,
         to: email,
@@ -33,7 +31,6 @@ router.post('/forgot-password', async (req, res) => {
         html: `<p>Haga clic en el siguiente enlace para restablecer su contraseña:</p><a href="${resetLink}">Restablecer contraseña</a>`
     };
 
-    // Envía el correo electrónico
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             return res.status(500).json({ status: 'error', message: 'Error al enviar el correo electrónico' });

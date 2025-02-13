@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 import { config } from './config/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,17 +11,12 @@ export default __dirname;
 export const SECRET = config.SECRET;
 
 export const procesaErrores = (res, error) => {
-    console.log(error);
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(500).json({
-        error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-        detalle: `${error.message}`
-    });
+    console.error(error);
+    res.status(500).json({ status: 'error', message: error.message });
 };
 
 export const generaHash = (password) => {
-    const salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(password, salt);
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 };
 
 export const isValidPassword = (password, hashedPassword) => {

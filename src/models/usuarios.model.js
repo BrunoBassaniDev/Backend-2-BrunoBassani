@@ -1,13 +1,15 @@
 import mongoose from 'mongoose';
 
 const usuarioSchema = new mongoose.Schema({
-    first_name: String,
-    last_name: String,
-    email: { type: String, unique: true },
-    age: Number,
-    password: String,
+    first_name: { type: String, required: true },
+    last_name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    age: { type: Number, required: true },
+    password: { type: String, required: true },
     cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' },
     role: { type: String, default: 'user' }
-}, { timestamps: true });
+}, { collection: 'usuarios' });
 
-export const usuariosModelo = mongoose.model('Usuario', usuarioSchema);
+const UsuarioModel = mongoose.model('Usuario', usuarioSchema);
+
+export { UsuarioModel as usuariosModelo };

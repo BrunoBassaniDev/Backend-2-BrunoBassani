@@ -1,23 +1,23 @@
-import ProductModel from '../models/product.model.js';
+import Producto from '../models/product.model.js';
 
 export class ProductosDAO {
     static async getProductos() {
-        return ProductModel.find().lean();
+        return Producto.find().lean();
     }
 
     static async getProductoById(id) {
-        return ProductModel.findById(id).lean();
+        return Producto.findById(id).lean();
     }
 
     static async createProducto(producto) {
-        return ProductModel.create(producto);
+        return Producto.create(producto);
     }
 
     static async updateProducto(id, producto) {
-        return ProductModel.findByIdAndUpdate(id, producto, { new: true });
+        return Producto.findByIdAndUpdate(id, producto, { new: true });
     }
 
     static async deleteProducto(id) {
-        return ProductModel.findByIdAndDelete(id);
+        return Producto.findByIdAndDelete(id);
     }
 }

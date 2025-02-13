@@ -12,9 +12,9 @@ let currentSort = "asc";
 let globalCartId;
 
 socket.on("products-list", (data) => {
-    const { docs: products, totalPages=1, cartId } = data || {};
+    const { docs: products, totalPages = 1, cartId } = data || {};
     globalCartId = cartId;
-    productsList.innerText = "";
+    productsList.innerHTML = "";
 
     if (!cartId) {
         console.error("Cart ID no recibido");
@@ -23,17 +23,17 @@ socket.on("products-list", (data) => {
 
     products.forEach((product) => {
         productsList.innerHTML += `<tr>
-        <td> ${product.id} </td>
-        <td>  ${product.title} </td>
-        <td> $${product.price} </td>
-        <td>
-            <button class="btn-reset btn-info" onclick="window.location.href='/product/${product.id}'"><span class="material-icons">info</span></button>
-            <button class="add-to-cart" data-product-id="${product.id}">+</button>
-            <button class="remove-from-cart" data-product-id="${product.id}">-</button>
-        </td>
-        </tr>
-        `;
+            <td>${product._id}</td>
+            <td>${product.title}</td>
+            <td>$${product.price}</td>
+            <td>
+                <button class="btn-reset btn-info" onclick="window.location.href='/product/${product._id}'"><span class="material-icons">info</span></button>
+                <button class="add-to-cart" data-product-id="${product._id}">+</button>
+                <button class="remove-from-cart" data-product-id="${product._id}">-</button>
+            </td>
+        </tr>`;
     });
+
     const paginationInfo = document.getElementById("pagination-info");
     paginationInfo.dataset.totalPages = totalPages;
     paginationInfo.innerText = `${currentPage} de ${totalPages}`;
@@ -54,13 +54,13 @@ document.getElementById("next-page").addEventListener("click", () => {
     }
 });
 
-document.getElementById("tilte-asc").addEventListener("click", () => {
+document.getElementById("title-asc").addEventListener("click", () => {
     currentSort = "asc";
     currentPage = 1;
     socket.emit("change-page", { page: currentPage, sort: currentSort });
 });
 
-document.getElementById("tilte-desc").addEventListener("click", () => {
+document.getElementById("title-desc").addEventListener("click", () => {
     currentSort = "desc";
     currentPage = 1;
     socket.emit("change-page", { page: currentPage, sort: currentSort });
@@ -72,19 +72,19 @@ document.body.addEventListener("click", (event) => {
     if (target.matches(".add-to-cart")) {
         const productId = target.dataset.productId;
         if (productId) {
-            socket.emit("add-product", { productId });
+            socket.emit("add-product-to-cart", { cartId: globalCartId, productId });
         }
     }
 
     if (target.matches(".remove-from-cart")) {
         const productId = target.dataset.productId;
         if (productId) {
-            socket.emit("remove-product", { productId });
+            socket.emit("remove-product-from-cart", { cartId: globalCartId, productId });
         }
     }
 });
 
-btnDeleteCart.onclick = (event)=>{
+btnDeleteCart.onclick = (event) => {
     if (event.target && event.target.id === "btn-delete-cart") {
         socket.emit("delete-cart", { id: globalCartId });
     }
@@ -117,15 +117,18 @@ productsForm.onsubmit = (event) => {
 };
 
 btnDeleteProduct.onclick = () => {
-
     const id = inputProductId.value;
     inputProductId.value = "";
     errorMessage.innerText = "";
 
     socket.emit("delete-product", { id });
-
 };
 
 socket.on("error-message", (data) => {
     errorMessage.innerText = data.message;
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const userId = document.getElementById("user-id").value;
+    socket.emit("initialize-cart", { userId });
 });
